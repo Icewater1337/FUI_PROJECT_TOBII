@@ -2,6 +2,11 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Tobii.Interaction;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System.Windows.Forms;
+using System.Net;
+using Microsoft.Win32;
 
 namespace Interaction_Interactors_101
 {
@@ -23,37 +28,94 @@ namespace Interaction_Interactors_101
     /// </summary>
     public class Program
     {
+        [STAThread]
         public static void Main(string[] args)
         {
-            // Everything starts with initializing Host, which manages the connection to the 
+
+            IWebDriver driver = new ChromeDriver();
+            driver.Url = "http://www.google.com";
+
+            // Everything starts with initializing Host, which manages connection to the 
             // Tobii Engine and provides all the Tobii Core SDK functionality.
             // NOTE: Make sure that Tobii.EyeX.exe is running
             var host = new Host();
 
-            PrintSampleIntroText();
+            // 2. Create stream. 
+            // var gazePointDataStream = host.Streams.CreateGazePointDataStream();
+            var fixationDataStream = host.Streams.CreateFixationDataStream();
 
-            // InteractorAgents are defined per window, so we need a handle to it.
-            var currentWindowHandle = Process.GetCurrentProcess().MainWindowHandle;
-            // Let's also obtain its bounds using Windows API calls (hidden in a helper method below).
-            var currentWindowBounds = GetWindowBounds(currentWindowHandle);
-            // Let's create the InteractorAgent.
-            var interactorAgent = host.InitializeVirtualInteractorAgent(currentWindowHandle, "ConsoleWindowAgent");
 
-            // Next we are going to create an interactor, which we will define with the gaze aware behavior.
-            // Gaze aware behavior simply tells you whether somebody is looking at the interactor or not.
-            interactorAgent
-                .AddInteractorFor(currentWindowBounds)
-                .WithGazeAware()
-                .HasGaze(() => Console.WriteLine("Hey there!"))
-                .LostGaze(() => Console.WriteLine("Bye..."));
+            var currentDpi = (int)Registry.GetValue("HKEY_CURRENT_USER\\Control Panel\\Desktop\\WindowMetrics", "AppliedDPI", 96);
 
-            Console.ReadKey(true);
+            var scale = (float)currentDpi / 96;
 
-            // we will close the coonection to the Tobii Engine before exit.
-            host.DisableConnection();
+            while (true)
+            {
+                if (Control.ModifierKeys == System.Windows.Forms.Keys.Control)
+                {
+
+                    Console.WriteLine(Cursor.Position.X);
+                    Console.WriteLine(Cursor.Position.Y);
+
+                    
+                    fixationDataStream.Next += (o, fixation) =>
+                    {
+
+                        // On the Next event, data comes as FixationData objects, wrapped in a StreamData<T> object.
+                        var fixationPointX = fixation.Data.X / scale;
+                        var fixationPointY = fixation.Data.Y / scale;
+
+                        Console.WriteLine(fixationPointX
+                           );
+                        Console.WriteLine(fixationPointY);
+
+                        IWebElement ele = null;
+
+                        try
+                        {
+                            //gazePointDataStream.GazePoint((x, y, ts) => Console.WriteLine("Timestamp: {0}\t X: {1} Y:{2}", ts, x, y));
+                            // Find the element at the mouse position
+                            if (driver is IJavaScriptExecutor)
+
+                                ele = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+                                    "return document.elementFromPoint(arguments[0], arguments[1])",
+                                    fixationPointX, fixationPointY );
+
+                            // okay, it is 4 lines, but you won't be able to see much without this one :)
+                            Console.ReadKey();
+
+                            // we will close the coonection to the Tobii Engine before exit.
+                            host.DisableConnection();
+                            // Select the element found
+                            if (ele != null)
+                            {
+
+                                var dialog = new SaveFileDialog();
+
+                                var result = dialog.ShowDialog(); //shows save file dialog
+                                if (result == DialogResult.OK)
+                                {
+                                    Console.WriteLine("writing to: " + dialog.FileName); //prints the file to save
+
+                                    var wClient = new WebClient();
+                                    wClient.DownloadFile(ele.GetAttribute("src"), dialog.FileName);
+                                }
+
+                            }
+                        }
+                        catch (Exception f)
+                        {
+                            Console.WriteLine(f);
+                        }
+                    };
+
+                }
+
+            }
         }
 
         #region Helpers 
+
 
         private static void PrintSampleIntroText()
         {
