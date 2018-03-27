@@ -7,6 +7,9 @@ using OpenQA.Selenium.Chrome;
 using System.Windows.Forms;
 using System.Net;
 using Microsoft.Win32;
+using System.Drawing;
+using OpenQA.Selenium.Interactions;
+using System.Threading;
 
 namespace Interaction_Interactors_101
 {
@@ -31,7 +34,7 @@ namespace Interaction_Interactors_101
         [STAThread]
         public static void Main(string[] args)
         {
-
+            // Opens a browser window.
             IWebDriver driver = new ChromeDriver();
             driver.Url = "http://www.google.com";
 
@@ -41,76 +44,93 @@ namespace Interaction_Interactors_101
             var host = new Host();
 
             // 2. Create stream. 
-            // var gazePointDataStream = host.Streams.CreateGazePointDataStream();
-            var fixationDataStream = host.Streams.CreateFixationDataStream();
+            var gazePointDataStream = host.Streams.CreateGazePointDataStream();
 
 
             var currentDpi = (int)Registry.GetValue("HKEY_CURRENT_USER\\Control Panel\\Desktop\\WindowMetrics", "AppliedDPI", 96);
 
             var scale = (float)currentDpi / 96;
-
+            Boolean done = false;
             while (true)
             {
+                
                 if (Control.ModifierKeys == System.Windows.Forms.Keys.Control)
                 {
-
-                    Console.WriteLine(Cursor.Position.X);
-                    Console.WriteLine(Cursor.Position.Y);
-
-                    
-                    fixationDataStream.Next += (o, fixation) =>
+                    gazePointDataStream.Next += (a, gaze) =>
                     {
-
-                        // On the Next event, data comes as FixationData objects, wrapped in a StreamData<T> object.
-                        var fixationPointX = fixation.Data.X / scale;
-                        var fixationPointY = fixation.Data.Y / scale;
-
-                        Console.WriteLine(fixationPointX
-                           );
-                        Console.WriteLine(fixationPointY);
-
-                        IWebElement ele = null;
-
-                        try
+                        if (!done)
                         {
-                            //gazePointDataStream.GazePoint((x, y, ts) => Console.WriteLine("Timestamp: {0}\t X: {1} Y:{2}", ts, x, y));
-                            // Find the element at the mouse position
-                            if (driver is IJavaScriptExecutor)
+                            var gazePointX = gaze.Data.X / scale;
+                            var gazePointY = gaze.Data.Y / scale;
+                            // var mouseX = Cursor.Position.X;
+                            // var mouseY = Cursor.Position.Y;
 
-                                ele = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
-                                    "return document.elementFromPoint(arguments[0], arguments[1])",
-                                    fixationPointX, fixationPointY );
+                            IWebElement ele = null;
 
-                            // okay, it is 4 lines, but you won't be able to see much without this one :)
-                            Console.ReadKey();
-
-                            // we will close the coonection to the Tobii Engine before exit.
-                            host.DisableConnection();
-                            // Select the element found
-                            if (ele != null)
+                            try
                             {
+                                if (driver is IJavaScriptExecutor)
+                                    // Gets the element at the coordinates using some java script and selenium.^^
+                                    ele = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+                                        "return document.elementFromPoint(arguments[0], arguments[1])",
+                                        gazePointX, gazePointY);
 
-                                var dialog = new SaveFileDialog();
-
-                                var result = dialog.ShowDialog(); //shows save file dialog
-                                if (result == DialogResult.OK)
+                                // Select the element found
+                                if (ele != null)
                                 {
-                                    Console.WriteLine("writing to: " + dialog.FileName); //prints the file to save
+                                    Thread.Sleep(1000);
+                                    Actions action = new Actions(driver);
+                                    action.ContextClick(ele).Build().Perform();
+                                    Thread.Sleep(100);
+                                    action.SendKeys("v").Build().Perform();
 
-                                    var wClient = new WebClient();
-                                    wClient.DownloadFile(ele.GetAttribute("src"), dialog.FileName);
+                                    /*  var dialog = new SaveFileDialog();
+                                      //shows save file dteialog
+                                      var result = dialog.ShowDialog();
+                                      if (result == DialogResult.OK)
+                                      {
+                                          Console.WriteLine("writing to: " + dialog.FileName); //prints the file to save
+                                          var url = ele.GetAttribute("src");
+                                          var width = ele.GetAttribute("width");
+                                          var height = ele.GetAttribute("height");
+                                          var wClient = new WebClient();
+                                          wClient.DownloadFile(url, dialog.FileName);
+                                      }*/
+
                                 }
 
+                                done = true;
+                                host.DisableConnection();
                             }
+                            catch (Exception f)
+                            {
+                                Console.WriteLine(f);
+                                done = true;
+                                host.DisableConnection();
+                            }
+                            
+                       
+                           
+
                         }
-                        catch (Exception f)
-                        {
-                            Console.WriteLine(f);
-                        }
-                    };
+
+                        };
+
+                 
+
+
+                    /*   fixationDataStream.Next += (o, fixation) =>
+                       {
+
+                           // On the Next event, data comes as FixationData objects, wrapped in a StreamData<T> object.
+                           var fixationPointX = fixation.Data.X / scale;
+                           var fixationPointY = fixation.Data.Y / scale;
+                           var mouseX = Cursor.Position.X;
+                           var mouseY = Cursor.Position.Y;
+
+                       }; */
 
                 }
-
             }
         }
 
@@ -132,19 +152,21 @@ namespace Interaction_Interactors_101
             Console.WriteLine();
         }
 
-        private static Rectangle GetWindowBounds(IntPtr windowHandle)
+        private static Tobii.Interaction.Rectangle GetWindowBounds(IntPtr windowHandle)
         {
             NativeRect nativeNativeRect;
             if (GetWindowRect(windowHandle, out nativeNativeRect))
-                return new Rectangle
+                return new Tobii.Interaction.Rectangle
                 {
                     X = nativeNativeRect.Left,
                     Y = nativeNativeRect.Top,
                     Width = nativeNativeRect.Right,
                     Height = nativeNativeRect.Bottom
+
+
                 };
 
-            return new Rectangle(0d, 0d, 1000d, 1000d);
+            return new Tobii.Interaction.Rectangle(0d, 0d, 1000d, 1000d);
         }
 
         [DllImport("user32.dll", SetLastError = true)]
