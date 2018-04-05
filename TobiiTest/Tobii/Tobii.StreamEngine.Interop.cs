@@ -184,7 +184,18 @@ namespace Tobii.StreamEngine
         [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_get_state_uint32")]
         public static extern tobii_error_t tobii_get_state_uint32(IntPtr device, tobii_state_t state, out uint value);
 
-       [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_notifications_subscribe")]
+        [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_get_state_string")]
+        private static extern tobii_error_t tobii_get_state_string(IntPtr device, tobii_state_t state, StringBuilder value);
+
+        public static tobii_error_t tobii_get_state_string(IntPtr device, tobii_state_t state, out string value)
+        {
+            var val = new StringBuilder(512);
+            var result = tobii_get_state_string(device, state, val);
+            value = val.ToString();
+            return result;
+        }
+
+        [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_notifications_subscribe")]
         public static extern tobii_error_t tobii_notifications_subscribe(IntPtr device, tobii_notifications_callback_t callback);
 
         [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_notifications_unsubscribe")]
@@ -318,14 +329,23 @@ namespace Tobii.StreamEngine
         [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_calibration_collect_data_3d")]
         public static extern tobii_error_t tobii_calibration_collect_data_3d(IntPtr device, float x, float y, float z);
 
+        [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_calibration_collect_data_per_eye_2d")]
+        public static extern tobii_error_t tobii_calibration_collect_data_per_eye_2d(IntPtr device, float x, float y, tobii_enabled_eye_t requested_eyes, out tobii_enabled_eye_t collected_eyes);
+
         [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_calibration_discard_data_2d")]
         public static extern tobii_error_t tobii_calibration_discard_data_2d(IntPtr device, float x, float y);
 
         [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_calibration_discard_data_3d")]
         public static extern tobii_error_t tobii_calibration_discard_data_3d(IntPtr device, float x, float y, float z);
 
+        [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_calibration_discard_data_per_eye_2d")]
+        public static extern tobii_error_t tobii_calibration_discard_data_per_eye_2d(IntPtr device, float x, float y, tobii_enabled_eye_t calibrated_eyes);
+
         [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_calibration_compute_and_apply")]
         public static extern tobii_error_t tobii_calibration_compute_and_apply(IntPtr device);
+
+        [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_calibration_compute_and_apply_per_eye")]
+        public static extern tobii_error_t tobii_calibration_compute_and_apply_per_eye(IntPtr device, out tobii_enabled_eye_t collected_eyes);
 
         public static tobii_error_t tobii_calibration_retrieve(IntPtr device, out byte[] calibration)
         {
@@ -467,6 +487,34 @@ namespace Tobii.StreamEngine
         [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_digital_syncport_unsubscribe")]
         public static extern tobii_error_t tobii_digital_syncport_unsubscribe(IntPtr device);
 
+        [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_enumerate_face_types")]
+        private static extern tobii_error_t tobii_enumerate_face_types_internal(IntPtr device, tobii_face_type_receiver_t receiver, IntPtr user_data);
+
+        public static tobii_error_t tobii_enumerate_face_types(IntPtr device, out List<string> face_types)
+        {
+            var types = new List<string>();
+            tobii_face_type_receiver_t handler = (face_type, data) => { types.Add(face_type); };
+            var result = tobii_enumerate_face_types_internal(device, handler, IntPtr.Zero);
+
+            face_types = types;
+
+            return result;
+        }
+
+        [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_set_face_type")]
+        public static extern tobii_error_t tobii_set_face_type(IntPtr device, string face_type);
+
+        [DllImport(stream_engine_dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tobii_get_face_type")]
+        private static extern tobii_error_t tobii_get_face_type(IntPtr device, StringBuilder face_type);
+
+        public static tobii_error_t tobii_get_face_type(IntPtr device, out string face_type)
+        {
+            var val = new StringBuilder(64);
+            var result = tobii_get_face_type(device, val);
+            face_type = val.ToString();
+            return result;
+        }
+
         #endregion
     }
 
@@ -503,6 +551,9 @@ namespace Tobii.StreamEngine
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void tobii_device_url_receiver_t(string url, IntPtr user_data);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void tobii_face_type_receiver_t(string face_type, IntPtr user_data);
 
     public enum tobii_feature_group_t
     {
@@ -580,7 +631,8 @@ namespace Tobii.StreamEngine
         TOBII_ERROR_OPERATION_FAILED,
         TOBII_ERROR_CONFLICTING_API_INSTANCES,
         TOBII_ERROR_CALIBRATION_BUSY,
-        TOBII_ERROR_CALLBACK_IN_PROGRESS
+        TOBII_ERROR_CALLBACK_IN_PROGRESS,
+        TOBII_ERROR_TOO_MANY_SUBSCRIBERS
     }
 
     public enum tobii_log_level_t
@@ -666,6 +718,10 @@ namespace Tobii.StreamEngine
         TOBII_NOTIFICATION_TYPE_DEVICE_PAUSED_STATE_CHANGED,
         TOBII_NOTIFICATION_TYPE_CALIBRATION_ENABLED_EYE_CHANGED,
         TOBII_NOTIFICATION_TYPE_CALIBRATION_ID_CHANGED,
+        TOBII_NOTIFICATION_TYPE_COMBINED_GAZE_FACTOR_CHANGED,
+        TOBII_NOTIFICATION_TYPE_FAULTS_CHANGED,
+        TOBII_NOTIFICATION_TYPE_WARNINGS_CHANGED,
+        TOBII_NOTIFICATION_TYPE_FACE_TYPE_CHANGED,
     }
 
     public enum tobii_notification_value_type_t
@@ -674,6 +730,9 @@ namespace Tobii.StreamEngine
         TOBII_NOTIFICATION_VALUE_TYPE_FLOAT,
         TOBII_NOTIFICATION_VALUE_TYPE_STATE,
         TOBII_NOTIFICATION_VALUE_TYPE_DISPLAY_AREA,
+        TOBII_NOTIFICATION_VALUE_TYPE_UINT,
+        TOBII_NOTIFICATION_VALUE_TYPE_ENABLED_EYE,
+        TOBII_NOTIFICATION_VALUE_TYPE_STRING,
     }
 
     [StructLayout(LayoutKind.Explicit)]
@@ -685,6 +744,17 @@ namespace Tobii.StreamEngine
         public tobii_state_bool_t state;
         [FieldOffset(0)]
         public tobii_display_area_t display_area;
+        [FieldOffset(0)]
+        public uint uint_;
+        [FieldOffset(0)]
+        public tobii_enabled_eye_t enabled_eye;
+        // TODO: Overlapping an object field with a non-object field i.e string and integer,
+        // will generate a runtime error. A re-design of this union is probably needed in order
+        // for it to work in the .NET bindings.
+        // WORK AROUND: When a notification containing a string is received, it needs to be
+        // queried through the tobii_get_state_string function.
+        //[FieldOffset(0), MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)]
+        //public string string_;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -727,6 +797,11 @@ namespace Tobii.StreamEngine
         public uint led_mode;
         public tobii_wearable_eye_t left;
         public tobii_wearable_eye_t right;
+
+        public tobii_validity_t gaze_origin_combined_validity;
+        public TobiiVector3 gaze_origin_combined_mm_xyz;
+        public tobii_validity_t gaze_direction_combined_validity;
+        public TobiiVector3 gaze_direction_combined_normalized_xyz;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -744,10 +819,13 @@ namespace Tobii.StreamEngine
 
     public enum tobii_capability_t
     {
-		TOBII_CAPABILITY_DISPLAY_AREA_WRITABLE,
-		TOBII_CAPABILITY_CALIBRATION_2D,
-		TOBII_CAPABILITY_CALIBRATION_3D,
-		TOBII_CAPABILITY_PERSISTENT_STORAGE,
+        TOBII_CAPABILITY_DISPLAY_AREA_WRITABLE,
+        TOBII_CAPABILITY_CALIBRATION_2D,
+        TOBII_CAPABILITY_CALIBRATION_3D,
+        TOBII_CAPABILITY_PERSISTENT_STORAGE,
+        TOBII_CAPABILITY_CALIBRATION_PER_EYE,
+        TOBII_CAPABILITY_COMBINED_GAZE_VR,
+        TOBII_CAPABILITY_FACE_TYPE,
     }
 
     public enum tobii_stream_t
@@ -861,6 +939,8 @@ namespace Tobii.StreamEngine
         TOBII_STATE_REMOTE_WAKE_ACTIVE,
         TOBII_STATE_DEVICE_PAUSED,
         TOBII_STATE_EXCLUSIVE_MODE,
+        TOBII_STATE_FAULT,
+        TOBII_STATE_WARNING,
         TOBII_STATE_CALIBRATION_ID,
         TOBII_STATE_CALIBRATION_ACTIVE,
     }

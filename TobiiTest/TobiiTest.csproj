@@ -56,12 +56,11 @@
     <Reference Include="Tobii.Interaction.Net, Version=0.7.3.333, Culture=neutral, PublicKeyToken=70326046dcdce6cb, processorArchitecture=MSIL">
       <HintPath>..\packages\Tobii.Interaction.0.7.3\lib\net45\Tobii.Interaction.Net.dll</HintPath>
     </Reference>
-    <Reference Include="WebDriver, Version=3.11.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.WebDriver.3.11.0\lib\net45\WebDriver.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Program.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tobii\Tobii.StreamEngine.Interop.cs" />
   </ItemGroup>
@@ -79,12 +78,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets'))" />
     <Error Condition="!Exists('..\packages\Tobii.EyeX.Client.1.8.504\build\Tobii.EyeX.Client.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Tobii.EyeX.Client.1.8.504\build\Tobii.EyeX.Client.targets'))" />
-    <Error Condition="!Exists('..\packages\Tobii.StreamEngine.Native.2.0.2.333\build\Tobii.StreamEngine.Native.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Tobii.StreamEngine.Native.2.0.2.333\build\Tobii.StreamEngine.Native.targets'))" />
-    <Error Condition="!Exists('..\packages\Tobii.StreamEngine.2.0.2.333\build\Tobii.StreamEngine.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Tobii.StreamEngine.2.0.2.333\build\Tobii.StreamEngine.targets'))" />
-    <Error Condition="!Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.37.0\build\Selenium.WebDriver.ChromeDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.ChromeDriver.2.37.0\build\Selenium.WebDriver.ChromeDriver.targets'))" />
+    <Error Condition="!Exists('..\packages\Tobii.StreamEngine.2.2.1.361\build\Tobii.StreamEngine.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Tobii.StreamEngine.2.2.1.361\build\Tobii.StreamEngine.targets'))" />
+    <Error Condition="!Exists('..\packages\Tobii.StreamEngine.Native.2.2.1.361\build\Tobii.StreamEngine.Native.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Tobii.StreamEngine.Native.2.2.1.361\build\Tobii.StreamEngine.Native.targets'))" />
   </Target>
   <Import Project="..\packages\Tobii.EyeX.Client.1.8.504\build\Tobii.EyeX.Client.targets" Condition="Exists('..\packages\Tobii.EyeX.Client.1.8.504\build\Tobii.EyeX.Client.targets')" />
-  <Import Project="..\packages\Tobii.StreamEngine.Native.2.0.2.333\build\Tobii.StreamEngine.Native.targets" Condition="Exists('..\packages\Tobii.StreamEngine.Native.2.0.2.333\build\Tobii.StreamEngine.Native.targets')" />
-  <Import Project="..\packages\Tobii.StreamEngine.2.0.2.333\build\Tobii.StreamEngine.targets" Condition="Exists('..\packages\Tobii.StreamEngine.2.0.2.333\build\Tobii.StreamEngine.targets')" />
-  <Import Project="..\packages\Selenium.WebDriver.ChromeDriver.2.37.0\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.37.0\build\Selenium.WebDriver.ChromeDriver.targets')" />
+  <Import Project="..\packages\Tobii.StreamEngine.2.2.1.361\build\Tobii.StreamEngine.targets" Condition="Exists('..\packages\Tobii.StreamEngine.2.2.1.361\build\Tobii.StreamEngine.targets')" />
+  <Import Project="..\packages\Tobii.StreamEngine.Native.2.2.1.361\build\Tobii.StreamEngine.Native.targets" Condition="Exists('..\packages\Tobii.StreamEngine.Native.2.2.1.361\build\Tobii.StreamEngine.Native.targets')" />
 </Project>

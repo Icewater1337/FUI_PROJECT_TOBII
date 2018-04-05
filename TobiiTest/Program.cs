@@ -8,6 +8,7 @@ using System.Drawing;
 [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
 public class Form1 : Form
 {
+    Boolean handled = false;
     public Form1()
     {
         // Create the form layout. If you are using Visual Studio, 
@@ -27,45 +28,51 @@ public class Form1 : Form
 
         // Load the user's home page.
         webBrowser1.GoHome();
+
+      
     }
+
+
 
     private void Wb_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
     {
+
         // your code handling the keys here, like:
-        if (e.Control && e.KeyCode == Keys.S)
+        if (!handled && e.KeyCode == Keys.F1)
         {
-            var s = webBrowser1.Document.GetElementsByTagName("img").GetElementsByName("k9Ntjo6omnnrjM:")[0].Parent;
+            handled = true;
+
+            var host = new Host();
+
+
+            StartGazePointDataStream(host);
 
             // Everything starts with initializing Host, which manages connection to the 
             // Tobii Engine and provides all the Tobii Core SDK functionality.
             // NOTE: Make sure that Tobii.EyeX.exe is running
-            var host = new Host();
-
-            // 2. Create stream. 
-            var gazePointDataStream = host.Streams.CreateGazePointDataStream();
-
-
-            var currentDpi = (int)Registry.GetValue("HKEY_CURRENT_USER\\Control Panel\\Desktop\\WindowMetrics", "AppliedDPI", 96);
-
-            var scale = (float)currentDpi / 96;
-
-            gazePointDataStream.Next += (a, gaze) =>
-            {
-                this.gazePointX = (int)Math.Floor(gaze.Data.X / scale);
-                this.gazePointY = (int)Math.Floor(gaze.Data.Y / scale);
-                this.mouseX = Cursor.Position.X;
-                this.mouseY = Cursor.Position.Y;
-                host.DisableConnection();
-            };
+            /*
             try
             {
+                this.mouseX = Cursor.Position.X;
+                this.mouseY = Cursor.Position.Y;
                 //DOM
-                var ele = webBrowser1.Document.GetElementFromPoint(new Point(gazePointX, gazePointY));
+                var ele = webBrowser1.Document.GetElementFromPoint(new Point(mouseX, mouseY));
+
+                if (ele.OffsetRectangle.Height == 15  && ele.InnerHtml.Contains("&nbsp;×&nbsp;"))
+                {
+                    ele = ele.Parent;
+                }
+                DrawRectangle(ele);
+
+
+
+                
+
 
                 // Select the element found
                 if (ele != null)
                 {
-                    ele.InvokeMember("click");
+                 //   ele.InvokeMember("click");
                     //action.SendKeys("v").Build().Perform();
 
                     /*  var dialog = new SaveFileDialog();
@@ -79,7 +86,7 @@ public class Form1 : Form
                           var height = ele.GetAttribute("height");
                           var wClient = new WebClient();
                           wClient.DownloadFile(url, dialog.FileName);
-                      }*/
+                      }
 
                 }
 
@@ -87,28 +94,137 @@ public class Form1 : Form
             catch (Exception f)
             {
                 Console.WriteLine(f);
-                host.DisableConnection();
             }
 
 
-
-
-
+    */
 
         }
+       
     }
-    /*
-    private void Form1_KeyUp(object sender, HtmlElementEventArgs e)
+
+    private void StartGazePointDataStream(Host host)
     {
+        
+        // 2. Create stream. 
+        var gazePointDataStream = host.Streams.CreateGazePointDataStream();
 
-        // Determine whether the key entered is the F1 key. Display help if it is.
-        if (e.KeyPressedCode == 4)
+
+        var currentDpi = (int)Registry.GetValue("HKEY_CURRENT_USER\\Control Panel\\Desktop\\WindowMetrics", "AppliedDPI", 96);
+
+        var scale = (float)currentDpi / 96;
+
+        gazePointDataStream.Next += (a, gaze) =>
         {
-            // Display a pop-up help topic to assist the user.
-            Help.ShowPopup(textBox1, "Enter your first name", new Point(textBox1.Right, this.textBox1.Bottom));
-        }
-    }*/
+            TrackGazeAndDraw(gaze,scale);
+            
+        };
+        // host.DisableConnection();
+    }
 
+    private void TrackGazeAndDraw(StreamData<GazePointData> gaze, float scale)
+    {
+        this.gazePointX = Convert.ToInt32(Math.Floor(gaze.Data.X / scale));
+        this.gazePointY = Convert.ToInt32(Math.Floor(gaze.Data.Y / scale));
+
+         if (webBrowser1.InvokeRequired)
+            {
+                webBrowser1.Invoke(new Action(() => { TrackGazeAndDraw(gaze, scale); }));
+            } else
+        {
+            try
+            {
+
+                ele = webBrowser1.Document.GetElementFromPoint(new Point(gazePointX, gazePointY));
+
+                if (ele != null)
+                {
+                    if (ele.OffsetRectangle.Height == 15 && ele.InnerHtml.Contains("&nbsp;×&nbsp;"))
+                    {
+                        ele = ele.Parent;
+                    }
+
+                   if (!ele.OuterText.Equals(prevEle.OuterText))
+                    {
+                       // newForm.Close();
+
+                        DrawRectangle(ele);
+                    }
+
+                    prevEle = ele;
+
+                }
+
+
+
+            }
+        catch (Exception f)
+        {
+            Console.WriteLine(f);
+                prevEle = ele;
+            }
+    }
+
+          
+    }
+
+    private void DrawRectangle(HtmlElement ele)
+    {
+        int xPos = getXoffset(ele);
+        int yPos = getYoffset(ele) + toolStrip1.ClientRectangle.Height + toolStrip2.ClientRectangle.Height + toolStripTextBox1.Height;
+        int eleWidth = ele.ClientRectangle.Width;
+        int eleHeight = ele.ClientRectangle.Height;
+        
+        newForm = new Form();
+        newForm.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+        newForm.BackColor = Color.Magenta;
+        newForm.TransparencyKey = Color.Magenta;
+        newForm.WindowState = FormWindowState.Maximized;
+        newForm.ShowInTaskbar = false;
+
+        newForm.Paint += (o, u) => {
+            Graphics g = u.Graphics;
+            Point topLeft = new Point(xPos, yPos);
+
+            g.DrawRectangle(new Pen(Brushes.Red, 5), new System.Drawing.Rectangle(topLeft, new System.Drawing.Size(eleWidth, eleHeight)));
+
+        };
+
+        newForm.Show();
+        newForm.TopMost = true;
+    }
+
+    public int getXoffset(HtmlElement el)
+    {
+        //get element pos
+        int xPos = el.OffsetRectangle.Left;
+
+        //get the parents pos
+        HtmlElement tempEl = el.OffsetParent;
+        while (tempEl != null)
+        {
+            xPos += tempEl.OffsetRectangle.Left;
+            tempEl = tempEl.OffsetParent;
+        }
+
+        return xPos;
+    }
+
+    public int getYoffset(HtmlElement el)
+    {
+        //get element pos
+        int yPos = el.OffsetRectangle.Top;
+
+        //get the parents pos
+        HtmlElement tempEl = el.OffsetParent;
+        while (tempEl != null)
+        {
+            yPos += tempEl.OffsetRectangle.Top;
+            tempEl = tempEl.OffsetParent;
+        }
+
+        return yPos;
+    }
 
     // Displays the Save dialog box.
     private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -295,6 +411,9 @@ public class Form1 : Form
     private ToolStripStatusLabel toolStripStatusLabel1;
     private int gazePointX = 0;
     private int gazePointY = 0;
+    private HtmlElement ele;
+    private HtmlElement prevEle;
+    private Form newForm;
     private int mouseX = 0;
     private int mouseY = 0;
 
