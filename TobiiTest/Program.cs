@@ -149,9 +149,10 @@ public class Form1 : Form
                        // newForm.Close();
 
                         DrawRectangle(ele);
+                        prevEle = ele;
                     }
 
-                    prevEle = ele;
+                  
 
                 }
 
