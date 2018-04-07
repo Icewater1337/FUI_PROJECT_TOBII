@@ -1,4 +1,6 @@
-﻿namespace SeleniumApproach
+﻿using System.Windows.Forms;
+
+namespace SeleniumApproach
 {
     partial class Form1
     {
@@ -31,6 +33,8 @@
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Text = "Form1";
+            this.PreviewKeyDown += new PreviewKeyDownEventHandler(Wb_PreviewKeyDown);
+
         }
 
         #endregion
