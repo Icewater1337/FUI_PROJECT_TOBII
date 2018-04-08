@@ -51,19 +51,31 @@ namespace SeleniumApproach
         {
             if (!handled && e.KeyCode == System.Windows.Forms.Keys.F1)
             {
-             
+
 
                 //  locationX = Cursor.Position.X;
                 // locationY = Cursor.Position.Y;
 
-               
 
 
-                StartGazePointDataStream();
+                while (true)
+                {
+                    //Thread.Sleep(100);
+                    GetElementLookingAt();
+                    handled = true;
 
 
-                handled = true;
+                    if (e.KeyCode == System.Windows.Forms.Keys.F2)
+                    {
+                        handled = false;
+                        break;
+                    }
 
+
+
+
+
+                }
             }
         }
 
@@ -71,7 +83,7 @@ namespace SeleniumApproach
         {
             if (ele != null)
             {
-                Thread.Sleep(5000);
+               // Thread.Sleep(100);
                 builder.MoveToElement(ele).Perform();
 
             }
@@ -103,7 +115,7 @@ namespace SeleniumApproach
             
         }
 
-        private void StartGazePointDataStream()
+        private void GetElementLookingAt()
         {
 
             var gazePointDataStream = this.host.Streams.CreateGazePointDataStream();
@@ -111,13 +123,13 @@ namespace SeleniumApproach
             int gazePointX = 0;
             int gazePointY = 0;
 
-            Thread.Sleep(5000);
+            //Thread.Sleep(1000);
          
            gazePointDataStream.Next += (a, gaze) =>
             
             {
                 gazePointX = Convert.ToInt32(Math.Floor(gaze.Data.X / scale));
-                gazePointY = Convert.ToInt32(Math.Floor(gaze.Data.Y / scale));
+                gazePointY = Convert.ToInt32(((Math.Floor(gaze.Data.Y / scale))/10)*9);
 
               
                 gazePointDataStream.IsEnabled = false;
@@ -129,61 +141,67 @@ namespace SeleniumApproach
 
             }
 
+
             // var  locationX = Cursor.Position.X;
             // var locationY = Cursor.Position.Y;
             IWebElement ele = GetElementByPoint(driver, gazePointX, gazePointY);
 
-            // IF the proper elt is not found, vary a bit and try to find it.
-            int variable = 0;
-            Boolean found = false;
-            while ( !(ele.TagName.Equals("a") || ele.TagName.Equals("img")) && variable < 20) {
-                var tmpGazeX = gazePointX;
-                var tmpGazeY = gazePointY;
-                int[] dirArr = { 1, -1 };
-                // move to certain directions X
-                for (int i = 0; i < dirArr.Length; i++)
+            if ( ele != null)
+            {
+                // IF the proper elt is not found, vary a bit and try to find it.
+                int variable = 0;
+                Boolean found = false;
+                while (!(ele.TagName.Equals("a") || ele.TagName.Equals("img")) && variable < 20)
                 {
-                    if ( found == false)
+                    var tmpGazeX = gazePointX;
+                    var tmpGazeY = gazePointY;
+                    int[] dirArr = { 1, -1 };
+                    // move to certain directions X
+                    for (int i = 0; i < dirArr.Length; i++)
                     {
-                        ele = GetElementByPoint(driver, (tmpGazeX + dirArr[i] * variable), tmpGazeY);
+                        if (found == false)
+                        {
+                            ele = GetElementByPoint(driver, (tmpGazeX + dirArr[i] * variable), tmpGazeY);
+                        }
+                        if (ele != null && ((ele.TagName.Equals("a") && ele.Text.Equals("")) || ele.TagName.Equals("img")))
+                        {
+                            found = true;
+                            break;
+                        }
+
                     }
-                    if (ele != null && ((ele.TagName.Equals("a") && ele.Text.Equals("")) || ele.TagName.Equals("img")))
+                    // move to Y
+                    for (int i = 0; i < dirArr.Length; i++)
                     {
-                        found = true;
+                        if (found == false)
+                        {
+                            ele = GetElementByPoint(driver, (tmpGazeX), (tmpGazeY + dirArr[i] * variable));
+                        }
+                        if (ele != null && ((ele.TagName.Equals("a") && ele.Text.Equals("")) || ele.TagName.Equals("img")))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found == true)
+                    {
                         break;
                     }
 
+                    variable++;
+
                 }
-                // move to Y
-                for (int i = 0; i < dirArr.Length; i++)
+
+                if (ele.TagName.Equals("img"))
                 {
-                    if ( found == false )
-                    {
-                        ele = GetElementByPoint(driver, (tmpGazeX), (tmpGazeY + dirArr[i] * variable));
-                    }
-                    if (ele != null &&(( ele.TagName.Equals("a") && ele.Text.Equals("")) || ele.TagName.Equals("img")))
-                    {
-                        found = true;
-                        break;
-                    }
+                    ele = GetParentElement(ele);
                 }
-                if (found == true)
+
+                if (ele != null && ele.TagName.Equals("a") && ele.Text.Equals(""))
                 {
-                    break;
+                    HoverOverElement(ele);
+
                 }
-
-                variable++;
-
-            }
-
-            if (ele.TagName.Equals("img"))
-            {
-                ele = GetParentElement(ele);
-            }
-        
-            if (ele != null && ele.TagName.Equals("a") && ele.Text.Equals(""))
-            {
-                HoverOverElement(ele);
 
             }
         }
