@@ -6,9 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -56,13 +59,37 @@ namespace SeleniumApproach
                 //  locationX = Cursor.Position.X;
                 // locationY = Cursor.Position.Y;
 
-
+                Stopwatch stopWatch = new Stopwatch();
+                double ellapsedSecs = 0;
+                Boolean alreadyClicked = false;
+                IWebElement previous = null;
 
                 while (true)
                 {
                     //Thread.Sleep(100);
-                    GetElementLookingAt();
+                    IWebElement ele = GetElementLookingAt();
+                    stopWatch.Start();
+                    ellapsedSecs = stopWatch.ElapsedMilliseconds / 1000; 
+                    HoverOverElement(ele);
+                    Thread.Sleep(1000);
+                    DownloadImage(ele);
                     handled = true;
+
+
+                    if (ele != null && previous != null && previous.Equals(ele) && ellapsedSecs >=2  && !alreadyClicked)
+                    {
+                        alreadyClicked = true;
+                        ele.Click();
+                       
+                         
+                      
+                    } else if ( ele != null && previous != null && !previous.Equals(ele))
+                    {
+                        ellapsedSecs = 0;
+                        stopWatch.Stop();
+                        stopWatch.Reset();
+                        alreadyClicked = false;
+                    }
 
 
                     if (e.KeyCode == System.Windows.Forms.Keys.F2)
@@ -71,6 +98,7 @@ namespace SeleniumApproach
                         break;
                     }
 
+                    previous = ele;
 
 
 
@@ -115,7 +143,7 @@ namespace SeleniumApproach
             
         }
 
-        private void GetElementLookingAt()
+        private IWebElement GetElementLookingAt()
         {
 
             var gazePointDataStream = this.host.Streams.CreateGazePointDataStream();
@@ -199,11 +227,42 @@ namespace SeleniumApproach
 
                 if (ele != null && ele.TagName.Equals("a") && ele.Text.Equals(""))
                 {
-                    HoverOverElement(ele);
+                    return ele;
+                    
+
 
                 }
 
             }
+            return null;
+        }
+
+        private void DownloadImage(IWebElement ele)
+        {
+            IWebElement parent = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+                                   "return arguments[0].parentNode;", ele);
+
+            System.Collections.ObjectModel.ReadOnlyCollection<IWebElement> children = parent.FindElements(By.TagName("div"));
+
+            IWebElement srcElt = children[2];
+
+            String html1 = srcElt.GetAttribute("innerHTML"); //(?=ou\":\")(.*)(?=\\",\\"ow)
+
+            String propReg = @"http.+?(?=\"",)";
+
+            var match = Regex.Match(html1, propReg).Value;
+
+            var dialog = new SaveFileDialog();
+
+            var result = dialog.ShowDialog(); //shows save file dialog
+            if (result == DialogResult.OK)
+            {
+                Console.WriteLine("writing to: " + dialog.FileName); //prints the file to save
+
+                var wClient = new WebClient();
+                wClient.DownloadFile(match, dialog.FileName);
+            }
+
         }
 
         private float GetDPIScale()
