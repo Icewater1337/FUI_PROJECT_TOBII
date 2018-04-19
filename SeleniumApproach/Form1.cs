@@ -72,24 +72,30 @@ namespace SeleniumApproach
                     ellapsedSecs = stopWatch.ElapsedMilliseconds / 1000; 
                     HoverOverElement(ele);
                     Thread.Sleep(1000);
-                    DownloadImage(ele);
+               
                     handled = true;
 
 
-                    if (ele != null && previous != null && previous.Equals(ele) && ellapsedSecs >=2  && !alreadyClicked)
+                    if ( ellapsedSecs > 2)
                     {
-                        alreadyClicked = true;
-                        ele.Click();
-                       
-                         
-                      
-                    } else if ( ele != null && previous != null && !previous.Equals(ele))
-                    {
-                        ellapsedSecs = 0;
-                        stopWatch.Stop();
-                        stopWatch.Reset();
-                        alreadyClicked = false;
+                        if (ele != null && previous != null && previous.Equals(ele) && ellapsedSecs >= 2 && !alreadyClicked)
+                        {
+                            alreadyClicked = true;
+                            ele.Click();
+                            DownloadImage(ele);
+
+
+
+                        }
+                        else if (ele != null && previous != null && !previous.Equals(ele))
+                        {
+                            ellapsedSecs = 0;
+                            stopWatch.Stop();
+                            stopWatch.Reset();
+                            alreadyClicked = false;
+                        }
                     }
+ 
 
 
                     if (e.KeyCode == System.Windows.Forms.Keys.F2)
@@ -217,7 +223,6 @@ namespace SeleniumApproach
                     }
 
                     variable++;
-
                 }
 
                 if (ele.TagName.Equals("img"))
@@ -228,13 +233,10 @@ namespace SeleniumApproach
                 if (ele != null && ele.TagName.Equals("a") && ele.Text.Equals(""))
                 {
                     return ele;
-                    
-
-
                 }
 
             }
-            return null;
+            return ele;
         }
 
         private void DownloadImage(IWebElement ele)
