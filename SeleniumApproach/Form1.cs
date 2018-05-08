@@ -2,6 +2,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
+using SeleniumApproach;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -54,8 +55,8 @@ namespace SeleniumApproach
         {
             if (!handled && e.KeyCode == System.Windows.Forms.Keys.F1)
             {
-
-
+                
+                ShowButtonsForm();
                 //  locationX = Cursor.Position.X;
                 // locationY = Cursor.Position.Y;
 
@@ -81,7 +82,7 @@ namespace SeleniumApproach
                         if (ele != null && previous != null && previous.Equals(ele) && ellapsedSecs >= 2 && !alreadyClicked)
                         {
                             alreadyClicked = true;
-                            ele.Click();
+                            //ele.Click();
                             DownloadImage(ele);
 
 
@@ -111,6 +112,12 @@ namespace SeleniumApproach
 
                 }
             }
+        }
+
+        private void ShowButtonsForm()
+        {
+            PictureForm picForm = new PictureForm();
+            picForm.ShowDialog();
         }
 
         private void HoverOverElement(IWebElement ele)
