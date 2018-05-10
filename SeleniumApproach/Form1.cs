@@ -1,4 +1,5 @@
-﻿using EyeXFramework.Forms;
+﻿using SeleniumApproach;
+using EyeXFramework.Forms;
 using Microsoft.Win32;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -24,7 +25,6 @@ namespace SeleniumApproach
 {
     public partial class Form1 : Form
     {
-        Boolean handled = false;
         IWebDriver driver;
         Actions builder;
         Host host;
@@ -93,9 +93,12 @@ namespace SeleniumApproach
 
         private void ShowButtonsForm(IWebElement ele)
         {
-            PictureForm picForm = new PictureForm();
-           picForm.ShowDialog();
-            picForm = null;
+            // PictureForm picForm = new PictureForm();
+            //picForm.ShowDialog();
+            // picForm = null;
+
+            ActivatableButtonsForm form = new ActivatableButtonsForm();
+            form.ShowDialog();
         }
 
 

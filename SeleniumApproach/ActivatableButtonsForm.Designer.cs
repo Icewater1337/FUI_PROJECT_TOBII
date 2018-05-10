@@ -1,11 +1,6 @@
-﻿using EyeXFramework.Forms;
-using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
-
-namespace SeleniumApproach
+﻿namespace SeleniumApproach
 {
-    partial class PictureForm
+    partial class ActivatableButtonsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -31,9 +26,6 @@ namespace SeleniumApproach
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        /// 
-        private BehaviorMap behaviorMap1;
-
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -59,7 +51,7 @@ namespace SeleniumApproach
             this.button1.Size = new System.Drawing.Size(531, 333);
             this.button1.TabIndex = 7;
             this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.buttonHueDown_Click);
             // 
             // button2
             // 
@@ -77,7 +69,7 @@ namespace SeleniumApproach
             this.button2.Size = new System.Drawing.Size(531, 333);
             this.button2.TabIndex = 5;
             this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.buttonHueUp_Click);
             // 
             // button3
             // 
@@ -95,7 +87,7 @@ namespace SeleniumApproach
             this.button3.Size = new System.Drawing.Size(531, 333);
             this.button3.TabIndex = 6;
             this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.buttonBrightnessUp_Click);
 
             // 
             // PictureForm
@@ -112,15 +104,15 @@ namespace SeleniumApproach
             this.Name = "PictureForm";
             this.Text = "Form1";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private Button button1;
-        private Button button2;
-        private Button button3;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private EyeXFramework.Forms.BehaviorMap behaviorMap1;
     }
 }
 

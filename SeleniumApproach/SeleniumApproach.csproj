@@ -63,25 +63,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivatableButtonsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ActivatableButtonsForm.Designer.cs">
+      <DependentUpon>ActivatableButtonsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="PictureForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PictureForm.designer.cs">
-      <DependentUpon>PictureForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ActivatableButtonsForm.resx">
+      <DependentUpon>ActivatableButtonsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PictureForm.resx">
-      <DependentUpon>PictureForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
