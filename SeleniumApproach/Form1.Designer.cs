@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using EyeXFramework.Forms;
 
 namespace SeleniumApproach
 {
@@ -23,17 +24,23 @@ namespace SeleniumApproach
         }
 
         #region Windows Form Designer generated code
-
+       
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(292, 212);
+            this.Name = "Form1";
             this.Text = "Form1";
-            this.PreviewKeyDown += new PreviewKeyDownEventHandler(Wb_PreviewKeyDown);
+            this.ResumeLayout(false);
 
         }
 

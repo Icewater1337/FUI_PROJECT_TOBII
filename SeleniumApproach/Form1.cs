@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using EyeXFramework.Forms;
+using Microsoft.Win32;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
@@ -11,6 +12,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -26,6 +28,7 @@ namespace SeleniumApproach
         IWebDriver driver;
         Actions builder;
         Host host;
+        Boolean isExecutingAction = false;
 
         public Form1()
         {
@@ -37,88 +40,51 @@ namespace SeleniumApproach
 
             driver.Url = "https://www.google.ch/search?q=tree&dcr=0&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiew6yFm6PaAhWFkywKHdgCBvYQ_AUICigB&biw=1536&bih=720";
 
-            
-           
-          
+            Thread.Sleep(2000);
 
-          //  By locator = By.XPath("//*[@id=\"rg_s\"]/div[1]/a/div[2]");
-          //IWebElement hoverElement = driver.FindElement(By.XPath("//*[@id=\"rg_s\"]/div[1]/a"));
-         
-
-
-            //Thread.Sleep(10000);
-
-            //Console.WriteLine(ele);
-        }
-
-        private void Wb_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            if (!handled && e.KeyCode == System.Windows.Forms.Keys.F1)
+            new Thread(() =>
             {
-                
-                ShowButtonsForm();
-                //  locationX = Cursor.Position.X;
-                // locationY = Cursor.Position.Y;
-
-                Stopwatch stopWatch = new Stopwatch();
-                double ellapsedSecs = 0;
-                Boolean alreadyClicked = false;
-                IWebElement previous = null;
-
+                Thread.CurrentThread.IsBackground = true;
+                /* run your code here */
                 while (true)
                 {
-                    //Thread.Sleep(100);
+
                     IWebElement ele = GetElementLookingAt();
-                    stopWatch.Start();
-                    ellapsedSecs = stopWatch.ElapsedMilliseconds / 1000; 
-                    HoverOverElement(ele);
-                    Thread.Sleep(1000);
-               
-                    handled = true;
 
-
-                    if ( ellapsedSecs > 2)
+                    if (ele != null)
                     {
-                        if (ele != null && previous != null && previous.Equals(ele) && ellapsedSecs >= 2 && !alreadyClicked)
-                        {
-                            alreadyClicked = true;
-                            //ele.Click();
-                            DownloadImage(ele);
-
-
-
-                        }
-                        else if (ele != null && previous != null && !previous.Equals(ele))
-                        {
-                            ellapsedSecs = 0;
-                            stopWatch.Stop();
-                            stopWatch.Reset();
-                            alreadyClicked = false;
-                        }
+                        HoverOverElement(ele);
                     }
- 
-
-
-                    if (e.KeyCode == System.Windows.Forms.Keys.F2)
-                    {
-                        handled = false;
-                        break;
-                    }
-
-                    previous = ele;
-
-
-
 
                 }
-            }
+            }).Start();
+
+
+       
+
         }
 
-        private void ShowButtonsForm()
+        public void executeAction()
         {
-            PictureForm picForm = new PictureForm();
-            picForm.ShowDialog();
+            this.Hide();
+            IWebElement ele = GetElementLookingAt();
+
+
+            ShowButtonsForm(ele);
+
+          
         }
+        private BehaviorMap behaviorMap1;
+
+        public bool IsExecutingAction { get => isExecutingAction; set => isExecutingAction = value; }
+
+        private void ShowButtonsForm(IWebElement ele)
+        {
+            PictureForm picForm = new PictureForm(ele, this);
+            picForm.ShowDialog();
+            this.IsExecutingAction = false;
+        }
+
 
         private void HoverOverElement(IWebElement ele)
         {
@@ -279,6 +245,11 @@ namespace SeleniumApproach
             var currentDpi = (int)Registry.GetValue("HKEY_CURRENT_USER\\Control Panel\\Desktop\\WindowMetrics", "AppliedDPI", 96);
            return (float)currentDpi / 96;
             
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Hide();
         }
     }
 }

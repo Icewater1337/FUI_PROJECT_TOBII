@@ -7,27 +7,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EyeXFramework.Forms;
+using EyeXFramework;
+using OpenQA.Selenium;
 
 namespace SeleniumApproach
 {
     public partial class PictureForm : Form
     {
-        public PictureForm()
+        private Form1 form;
+        private IWebElement ele;
+
+        public PictureForm(IWebElement ele, Form1 form)
         {
             InitializeComponent();
             this.BackColor = Color.LimeGreen;
             this.TransparencyKey = Color.LimeGreen;
 
-        }
+            this.form = form;
+            this.ele = ele;
+            Program.EyeXHost.Connect(behaviorMap1);
+            behaviorMap1.Add(button1, new ActivatableBehavior(button1_Click));
+            behaviorMap1.Add(button2, new ActivatableBehavior(button2_Click));
+            behaviorMap1.Add(button3, new ActivatableBehavior(button3_Click));
 
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("This the shit2");
-        }
-
-        private void pictureBox1_Click_1(object sender, EventArgs e)
-        {
-            MessageBox.Show("This the shit2");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -35,20 +38,24 @@ namespace SeleniumApproach
 
         }
 
-        private void pictureBox1_Click_2(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("test3");
 
+            this.Hide();
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
-
+            MessageBox.Show("test3");
+            this.Hide();
         }
 
-        private void pictureBox1_Click_3(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("test");
-            Application.Exit();
+            MessageBox.Show("test3");
+            this.Hide();
         }
+
     }
 }
