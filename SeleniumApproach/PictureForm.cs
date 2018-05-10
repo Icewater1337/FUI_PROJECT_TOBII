@@ -15,19 +15,15 @@ namespace SeleniumApproach
 {
     public partial class PictureForm : Form
     {
-        private Form1 form;
-        private IWebElement ele;
-
-        public PictureForm(IWebElement ele, Form1 form)
+        public PictureForm()
         {
             InitializeComponent();
             this.BackColor = Color.LimeGreen;
             this.TransparencyKey = Color.LimeGreen;
 
-            this.form = form;
-            this.ele = ele;
             Program.EyeXHost.Connect(behaviorMap1);
-            behaviorMap1.Add(button1, new ActivatableBehavior(button1_Click));
+            ActivatableBehavior beh1 = new ActivatableBehavior(button1_Click);
+            behaviorMap1.Add(button1, beh1);
             behaviorMap1.Add(button2, new ActivatableBehavior(button2_Click));
             behaviorMap1.Add(button3, new ActivatableBehavior(button3_Click));
 
@@ -40,21 +36,20 @@ namespace SeleniumApproach
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("test3");
-
-            this.Hide();
+            MessageBox.Show("test1");
+            this.Dispose();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("test3");
-            this.Hide();
+            MessageBox.Show("test2");
+            this.Dispose();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             MessageBox.Show("test3");
-            this.Hide();
+            this.Dispose();
         }
 
     }

@@ -59,30 +59,43 @@ namespace SeleniumApproach
                 }
             }).Start();
 
+            while (true)
+            {
+                if (IsKeyPushedDown(System.Windows.Forms.Keys.LControlKey))
+                {
+                    executeAction();
+                }
 
-       
+            }
 
         }
+
+        [DllImport("user32.dll")]
+        static extern ushort GetAsyncKeyState(int vKey);
+
+        public static bool IsKeyPushedDown(System.Windows.Forms.Keys vKey)
+        {
+            return 0 != (GetAsyncKeyState((int)vKey) & 0x8000);
+        }
+
 
         public void executeAction()
         {
             this.Hide();
             IWebElement ele = GetElementLookingAt();
 
-
             ShowButtonsForm(ele);
 
           
         }
-        private BehaviorMap behaviorMap1;
 
         public bool IsExecutingAction { get => isExecutingAction; set => isExecutingAction = value; }
 
         private void ShowButtonsForm(IWebElement ele)
         {
-            PictureForm picForm = new PictureForm(ele, this);
-            picForm.ShowDialog();
-            this.IsExecutingAction = false;
+            PictureForm picForm = new PictureForm();
+           picForm.ShowDialog();
+            picForm = null;
         }
 
 

@@ -105,9 +105,9 @@ namespace SeleniumApproach
             this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.Menu;
             this.ClientSize = new System.Drawing.Size(2500, 500);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button3);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "PictureForm";
             this.Text = "Form1";
@@ -118,7 +118,7 @@ namespace SeleniumApproach
         }
 
         #endregion
-        private System.Windows.Forms.Button button1;
+        private Button button1;
         private Button button2;
         private Button button3;
     }
