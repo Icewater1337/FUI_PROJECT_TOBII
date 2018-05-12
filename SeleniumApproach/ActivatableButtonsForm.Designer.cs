@@ -51,7 +51,7 @@
             this.button1.Size = new System.Drawing.Size(531, 333);
             this.button1.TabIndex = 7;
             this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.buttonHueDown_Click);
+            this.button1.Click += new System.EventHandler(this.copyImageToClipboard);
             // 
             // button2
             // 
@@ -69,7 +69,7 @@
             this.button2.Size = new System.Drawing.Size(531, 333);
             this.button2.TabIndex = 5;
             this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.buttonHueUp_Click);
+            this.button2.Click += new System.EventHandler(this.downloadImage);
             // 
             // button3
             // 
@@ -87,7 +87,7 @@
             this.button3.Size = new System.Drawing.Size(531, 333);
             this.button3.TabIndex = 6;
             this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.buttonBrightnessUp_Click);
+            this.button3.Click += new System.EventHandler(this.shareImage);
 
             // 
             // PictureForm

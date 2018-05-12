@@ -8,14 +8,19 @@ namespace SeleniumApproach
     using System.Drawing;
     using System.Windows.Forms;
     using EyeXFramework;
+    using OpenQA.Selenium;
 
     public partial class ActivatableButtonsForm : Form
     {
         const float HueStep = 0.075f;
         const float BrightnessStep = 0.1f;
+        private IWebElement ele;
+        private Form1 form1;
 
-        public ActivatableButtonsForm()
+        public ActivatableButtonsForm(Form1 form1, OpenQA.Selenium.IWebElement ele)
         {
+            this.ele = ele;
+            this.form1 = form1;
             KeyPreview = true;
             InitializeComponent();
             this.BackColor = Color.LimeGreen;
@@ -35,7 +40,7 @@ namespace SeleniumApproach
         {
             Console.WriteLine("OnKeyUp: " + keyEventArgs.KeyCode);
 
-            if (keyEventArgs.KeyCode == Keys.ShiftKey)
+            if (keyEventArgs.KeyCode == System.Windows.Forms.Keys.ShiftKey)
             {
                 Console.WriteLine("TriggerActivation");
                 Program.EyeXHost.TriggerActivation();
@@ -49,7 +54,7 @@ namespace SeleniumApproach
             // We don't bother to do it in this example since most users do not press and hold down
             // the key for long, when clicking.
             Console.WriteLine("OnKeyDown: " + keyEventArgs.KeyCode);
-            if (keyEventArgs.KeyCode == Keys.ShiftKey)
+            if (keyEventArgs.KeyCode == System.Windows.Forms.Keys.ShiftKey)
             {
                 Console.WriteLine("TriggerActivationModeOn");
                 Program.EyeXHost.TriggerActivationModeOn();
@@ -71,19 +76,20 @@ namespace SeleniumApproach
             }
         }
 
-        private void buttonHueDown_Click(object sender, EventArgs e)
+        private void copyImageToClipboard(object sender, EventArgs e)
         {
-            MessageBox.Show("test1");
+            form1.CopyImageToClipboard(ele);
+
         }
 
-        private void buttonHueUp_Click(object sender, EventArgs e)
+        private void downloadImage(object sender, EventArgs e)
         {
-            MessageBox.Show("test2");
+            form1.DownloadImage(ele);
         }
 
-        private void buttonBrightnessUp_Click(object sender, EventArgs e)
+        private void shareImage(object sender, EventArgs e)
         {
-            MessageBox.Show("test3");
+            form1.ShareImage(ele);
         }
 
      

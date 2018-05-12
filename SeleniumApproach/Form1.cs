@@ -42,10 +42,10 @@ namespace SeleniumApproach
 
             Thread.Sleep(2000);
 
+            /*
             new Thread(() =>
             {
                 Thread.CurrentThread.IsBackground = true;
-                /* run your code here */
                 while (true)
                 {
 
@@ -58,7 +58,7 @@ namespace SeleniumApproach
 
                 }
             }).Start();
-
+            */
             while (true)
             {
                 if (IsKeyPushedDown(System.Windows.Forms.Keys.LControlKey))
@@ -82,9 +82,10 @@ namespace SeleniumApproach
         public void executeAction()
         {
             this.Hide();
-            IWebElement ele = GetElementLookingAt();
+            //IWebElement ele = GetElementLookingAt();
+            IWebElement testEle = driver.FindElement(By.XPath(@"//*[@id=""rg_s""]/div[2]/a"));
 
-            ShowButtonsForm(ele);
+            ShowButtonsForm(testEle);
 
           
         }
@@ -97,7 +98,7 @@ namespace SeleniumApproach
             //picForm.ShowDialog();
             // picForm = null;
 
-            ActivatableButtonsForm form = new ActivatableButtonsForm();
+            ActivatableButtonsForm form = new ActivatableButtonsForm(this, ele);
             form.ShowDialog();
         }
 
@@ -123,6 +124,65 @@ namespace SeleniumApproach
                 throw new InvalidOperationException("Javascript executor should not be null");
             }
         }
+
+        internal void ShareImage(IWebElement ele)
+        {
+            ele.Click();
+            IWebElement parent = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+            "return arguments[0].parentNode;", ele);
+
+            System.Collections.ObjectModel.ReadOnlyCollection<IWebElement> children = parent.FindElements(By.TagName("div"));
+
+            IWebElement srcElt = children[2];
+
+            String html1 = srcElt.GetAttribute("innerHTML"); //(?=ou\":\")(.*)(?=\\",\\"ow)
+
+            String propReg = @"http.+?(?=\"",)";
+
+            var match = Regex.Match(html1, propReg).Value.Replace(@"""","");
+
+            var imgSrc = @"//img [@src="""+match +@"""]";
+
+            IWebElement elts = null;
+
+
+            while (elts == null)
+            {
+                try
+                {
+                    elts = driver.FindElement(By.XPath(imgSrc));
+                }
+                catch (Exception)
+                {
+                    elts = driver.FindElement(By.XPath(imgSrc));
+                }
+            }
+
+            
+
+            IWebElement el = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+                      "return arguments[0].parentNode;", elts);
+
+            el = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+                     "return arguments[0].parentNode;", el);
+
+            el = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+                   "return arguments[0].parentNode;", el);
+
+            el = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+                   "return arguments[0].parentNode;", el);
+
+            el = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+                   "return arguments[0].parentNode;", el);
+
+            IReadOnlyCollection<IWebElement> tagZ = (IReadOnlyCollection<IWebElement>)el.FindElements(By.TagName("a"));
+            IWebElement shareLink = tagZ.FirstOrDefault(x => ((IWebElement)x).Text == "Share");
+            shareLink.Click();
+
+
+
+        }
+
         private IWebElement GetElementByPoint(IWebDriver driver, int locationX, int locationY)
         {
             if (driver is IJavaScriptExecutor)
@@ -228,7 +288,35 @@ namespace SeleniumApproach
             return ele;
         }
 
-        private void DownloadImage(IWebElement ele)
+
+        public void CopyImageToClipboard(IWebElement elt)
+        {
+            IWebElement parent = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+                       "return arguments[0].parentNode;", elt);
+
+            System.Collections.ObjectModel.ReadOnlyCollection<IWebElement> children = parent.FindElements(By.TagName("div"));
+
+            IWebElement srcElt = children[2];
+
+            String html1 = srcElt.GetAttribute("innerHTML"); //(?=ou\":\")(.*)(?=\\",\\"ow)
+
+            String propReg = @"http.+?(?=\"",)";
+
+            var match = Regex.Match(html1, propReg).Value;
+
+            String fileEnding = match.Substring(match.Length - 4);
+
+            var wClient = new WebClient();
+            System.IO.Directory.CreateDirectory("C:/tmp");
+            wClient.DownloadFile(match, "C:/tmp/tmp"+ fileEnding);
+
+            Bitmap source = new Bitmap(@"C:/tmp/tmp"+ fileEnding);
+
+            Clipboard.SetImage(source);
+
+        }
+
+        public void DownloadImage(IWebElement ele)
         {
             IWebElement parent = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
                                    "return arguments[0].parentNode;", ele);
