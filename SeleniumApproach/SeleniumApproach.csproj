@@ -120,7 +120,11 @@
     <None Include="Resources\download.png" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< Updated upstream
     <None Include="Resources\Copy500.png" />
+=======
+    <None Include="Resources\copy500.png" />
+>>>>>>> Stashed changes
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\download500.png" />

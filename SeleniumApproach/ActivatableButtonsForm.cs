@@ -12,8 +12,7 @@ namespace SeleniumApproach
 
     public partial class ActivatableButtonsForm : Form
     {
-        const float HueStep = 0.075f;
-        const float BrightnessStep = 0.1f;
+     
         private IWebElement ele;
         private Form1 form1;
 

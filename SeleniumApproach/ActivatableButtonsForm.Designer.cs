@@ -38,14 +38,14 @@
             // button1
             // 
             this.button1.BackColor = System.Drawing.Color.Transparent;
-            this.button1.BackgroundImage = global::SeleniumApproach.Properties.Resources.Copy500;
+            this.button1.BackgroundImage = global::SeleniumApproach.Properties.Resources.copy500;
             this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.button1.FlatAppearance.BorderSize = 0;
             this.button1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
             this.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button1.Image = global::SeleniumApproach.Properties.Resources.Copy500;
+            this.button1.Image = global::SeleniumApproach.Properties.Resources.copy500;
             this.button1.Location = new System.Drawing.Point(-1, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(531, 531);
@@ -81,7 +81,7 @@
             this.button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button3.Image = global::SeleniumApproach.Properties.Resources.shareSmall;
+            this.button3.Image = global::SeleniumApproach.Properties.Resources.share500;
             this.button3.Location = new System.Drawing.Point(1968, 0);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(531, 531);
@@ -95,7 +95,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.Menu;
-            this.ClientSize = new System.Drawing.Size(2500, 560);
+            this.ClientSize = new System.Drawing.Size(2500, 545);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button3);
