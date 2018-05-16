@@ -41,7 +41,7 @@ namespace SeleniumApproach
 
             Thread.Sleep(2000);
 
-            
+            /*
             new Thread(() =>
             {
                 Thread.CurrentThread.IsBackground = true;
@@ -56,7 +56,7 @@ namespace SeleniumApproach
                     }
 
                 }
-            }).Start();
+            }).Start();*/
             
             while (true)
             {
@@ -81,10 +81,10 @@ namespace SeleniumApproach
         public void executeAction()
         {
             this.Hide();
-            //IWebElement ele = GetElementLookingAt();
-            IWebElement testEle = driver.FindElement(By.XPath(@"//*[@id=""rg_s""]/div[2]/a"));
+            IWebElement ele = GetElementLookingAt();
+            //IWebElement testEle = driver.FindElement(By.XPath(@"//*[@id=""rg_s""]/div[2]/a"));
 
-            ShowButtonsForm(testEle);
+            ShowButtonsForm(ele);
 
           
         }
