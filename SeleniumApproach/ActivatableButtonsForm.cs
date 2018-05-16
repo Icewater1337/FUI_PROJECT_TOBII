@@ -79,17 +79,20 @@ namespace SeleniumApproach
         private void copyImageToClipboard(object sender, EventArgs e)
         {
             form1.CopyImageToClipboard(ele);
+            this.Dispose();
 
         }
 
         private void downloadImage(object sender, EventArgs e)
         {
             form1.DownloadImage(ele);
+            this.Dispose();
         }
 
         private void shareImage(object sender, EventArgs e)
         {
             form1.ShareImage(ele);
+            this.Dispose();
         }
 
      

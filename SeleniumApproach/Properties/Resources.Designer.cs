@@ -63,9 +63,39 @@ namespace SeleniumApproach.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Copy500 {
+            get {
+                object obj = ResourceManager.GetObject("Copy500", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap download500 {
+            get {
+                object obj = ResourceManager.GetObject("download500", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap downloadSmall {
             get {
                 object obj = ResourceManager.GetObject("downloadSmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap share500 {
+            get {
+                object obj = ResourceManager.GetObject("share500", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

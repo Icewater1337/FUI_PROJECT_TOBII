@@ -4,7 +4,6 @@ using Microsoft.Win32;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
-using SeleniumApproach;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -42,7 +41,7 @@ namespace SeleniumApproach
 
             Thread.Sleep(2000);
 
-            /*
+            
             new Thread(() =>
             {
                 Thread.CurrentThread.IsBackground = true;
@@ -58,7 +57,7 @@ namespace SeleniumApproach
 
                 }
             }).Start();
-            */
+            
             while (true)
             {
                 if (IsKeyPushedDown(System.Windows.Forms.Keys.LControlKey))
