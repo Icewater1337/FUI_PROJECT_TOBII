@@ -38,7 +38,7 @@ namespace SeleniumApproach
             this.host = new Host();
 
             driver.Url = "https://www.google.ch/search?q=tree&dcr=0&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiew6yFm6PaAhWFkywKHdgCBvYQ_AUICigB&biw=1536&bih=720";
-
+            list = GetImageHrefsOnScreen();
             Thread.Sleep(2000);
 
             /*
@@ -81,9 +81,8 @@ namespace SeleniumApproach
         public void executeAction()
         {
             this.Hide();
-            IWebElement ele = GetElementLookingAt();
-            //IWebElement testEle = driver.FindElement(By.XPath(@"//*[@id=""rg_s""]/div[2]/a"));
-
+            //IWebElement ele = GetElementLookingAt();
+            IWebElement ele = GetElementLookingAtRectangle();
             ShowButtonsForm(ele);
 
           
@@ -286,8 +285,68 @@ namespace SeleniumApproach
             }
             return ele;
         }
+        private List<IWebElement> list;
+        private List<IWebElement> GetImageHrefsOnScreen()
+        {
+            IReadOnlyCollection<IWebElement> elts = driver.FindElements(By.TagName("img"));
+            List<IWebElement> myList = new List<IWebElement>(elts);
+            List<IWebElement> eltsWithClass = myList.Where<IWebElement>(v => v.GetAttribute("class").Equals("rg_ic rg_i")).ToList<IWebElement>();
+            List<IWebElement> retList = new List<IWebElement>();
+
+            foreach (IWebElement el in eltsWithClass)
+            {
+                retList.Add(GetParentElement(el));
+            }
+
+            retList = retList.GetRange(0, 10);
+            return retList;
+
+        }
+
+        private double GetDistanceToElement(IWebElement ele, Point p)
+        {
+            var loc = ele.Location.X;
+            var width = ele.Size.Width;
+            int[] first = { loc - p.X, 0, p.X - (loc + width) };
+            int dx = first.Max();
+            var loc2 = ele.Location.Y;
+            var height = ele.Size.Height;
+            int[] second = { loc2 - p.Y, 0, p.Y - (loc2 + height) };
+            int dy = second.Max();
+            double d = dx * dx + dy * dy;
+            return Math.Sqrt(d);
+        }
+
+        private IWebElement GetElementLookingAtRectangle()
+        {
+
+            var gazePointDataStream = this.host.Streams.CreateGazePointDataStream();
+            float scale = GetDPIScale();
+            int gazePointX = 0;
+            int gazePointY = 0;
+
+            gazePointDataStream.Next += (a, gaze) =>
+
+            {
+                gazePointX = Convert.ToInt32(Math.Floor(gaze.Data.X / scale));
+                gazePointY = Convert.ToInt32(((Math.Floor(gaze.Data.Y / scale)) / 10) * 9);
 
 
+                gazePointDataStream.IsEnabled = false;
+            };
+
+
+            while (gazePointDataStream.IsEnabled)
+            {
+
+            }
+
+            // var gazePointX = 240;
+            // var gazePointY = 230;
+            IWebElement closest = list.OrderBy(e => GetDistanceToElement(e, new Point(gazePointX, gazePointY))).First();
+
+            return closest;
+        }
         public void CopyImageToClipboard(IWebElement elt)
         {
             IWebElement parent = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
