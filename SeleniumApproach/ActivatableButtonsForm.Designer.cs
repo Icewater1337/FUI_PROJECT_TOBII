@@ -81,7 +81,7 @@
             this.button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button3.Image = global::SeleniumApproach.Properties.Resources.shareSmall;
+            this.button3.Image = global::SeleniumApproach.Properties.Resources.share500;
             this.button3.Location = new System.Drawing.Point(1968, 0);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(531, 531);

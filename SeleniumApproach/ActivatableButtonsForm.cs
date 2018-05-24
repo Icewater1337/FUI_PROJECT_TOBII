@@ -23,8 +23,12 @@ namespace SeleniumApproach
             this.form1 = form1;
             KeyPreview = true;
             InitializeComponent();
-            this.BackColor = Color.LimeGreen;
-            this.TransparencyKey = Color.LimeGreen;
+            this.BackColor = Color.Black;
+            this.TransparencyKey = Color.Black;
+
+          
+
+            
 
             // Make the buttons on the form direct clickable using the Activatable behavior.
             Program.EyeXHost.Connect(behaviorMap1);
@@ -95,6 +99,7 @@ namespace SeleniumApproach
             this.Dispose();
         }
 
+      
      
     }
 }

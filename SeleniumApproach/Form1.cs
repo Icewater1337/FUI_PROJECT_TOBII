@@ -97,7 +97,12 @@ namespace SeleniumApproach
             // picForm = null;
 
             ActivatableButtonsForm form = new ActivatableButtonsForm(this, ele);
+            Form backGorm = ShowBackgroundForm();
+            backGorm.Location = this.Location;
+            backGorm.Opacity = 0.75;
+            backGorm.Show();
             form.ShowDialog();
+            backGorm.Dispose();
         }
 
 
@@ -180,6 +185,38 @@ namespace SeleniumApproach
 
 
         }
+
+        private Form ShowBackgroundForm()
+        {
+            Form form = new Form();
+            form.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
+            form.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            form.AutoSize = true;
+            form.BackColor = System.Drawing.SystemColors.Menu;
+            form.ClientSize = new System.Drawing.Size(2700, 700);
+            form.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            form.Name = "ActivatableButtonsForm";
+            form.Text = "Form1";
+            form.TopMost = true;
+            form.ResumeLayout(false);
+            System.IntPtr ptr = CreateRoundRectRgn(0, 0, form.Width, form.Height, 100, 100); // _BoarderRaduis can be adjusted to your needs, try 15 to start.
+            form.Region = System.Drawing.Region.FromHrgn(ptr);
+            return form;
+        }
+
+        [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+        private static extern IntPtr CreateRoundRectRgn
+       (
+           int nLeftRect,     // x-coordinate of upper-left corner
+           int nTopRect,      // y-coordinate of upper-left corner
+           int nRightRect,    // x-coordinate of lower-right corner
+           int nBottomRect,   // y-coordinate of lower-right corner
+           int nWidthEllipse, // height of ellipse
+           int nHeightEllipse // width of ellipse
+       );
+
+      
+
 
         private IWebElement GetElementByPoint(IWebDriver driver, int locationX, int locationY)
         {
