@@ -101,8 +101,10 @@ namespace SeleniumApproach
             backGorm.Location = this.Location;
             backGorm.Opacity = 0.75;
             backGorm.Show();
+            form.BringToFront();
             form.ShowDialog();
-            backGorm.Dispose();
+           
+           backGorm.Dispose();
         }
 
 

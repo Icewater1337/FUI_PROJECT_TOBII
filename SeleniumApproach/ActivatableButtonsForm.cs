@@ -23,8 +23,8 @@ namespace SeleniumApproach
             this.form1 = form1;
             KeyPreview = true;
             InitializeComponent();
-            this.BackColor = Color.Black;
-            this.TransparencyKey = Color.Black;
+            this.BackColor = Color.DarkGray;
+            this.TransparencyKey = Color.DarkGray;
 
           
 
