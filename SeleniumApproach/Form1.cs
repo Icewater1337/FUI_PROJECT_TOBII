@@ -41,22 +41,33 @@ namespace SeleniumApproach
             list = GetImageHrefsOnScreen();
             Thread.Sleep(2000);
 
-            /*
+            
             new Thread(() =>
             {
+                Stopwatch stopwatch = new Stopwatch();
+                double ellapsedSecs = 0;
+                Boolean alreadyClicked = false;
+                IWebElement previous = null;
+
                 Thread.CurrentThread.IsBackground = true;
                 while (true)
                 {
 
-                    IWebElement ele = GetElementLookingAt();
 
-                    if (ele != null)
+                    IWebElement ele = GetElementLookingAtRectangle();
+                    stopwatch.Start();
+                    ellapsedSecs = stopwatch.ElapsedMilliseconds / 1000;
+
+                    if (ele != null && previous != null && !previous.Equals(ele) && !isExecutingAction)
                     {
+                        alreadyClicked = true;
                         HoverOverElement(ele);
-                    }
+                    } 
+
+                    previous = ele;
 
                 }
-            }).Start();*/
+            }).Start();
             
             while (true)
             {
@@ -83,7 +94,9 @@ namespace SeleniumApproach
             this.Hide();
             //IWebElement ele = GetElementLookingAt();
             IWebElement ele = GetElementLookingAtRectangle();
+            isExecutingAction = true;
             ShowButtonsForm(ele);
+            isExecutingAction = false;
 
           
         }
@@ -98,13 +111,18 @@ namespace SeleniumApproach
 
             ActivatableButtonsForm form = new ActivatableButtonsForm(this, ele);
             Form backGorm = ShowBackgroundForm();
+            backGorm.StartPosition = FormStartPosition.CenterScreen;
+            Form picForm = CreateImageShowSuccessForm(ele);
             backGorm.Location = this.Location;
             backGorm.Opacity = 0.75;
+            picForm.Opacity = 0.75;
             backGorm.Show();
-            form.BringToFront();
+
+            picForm.Show();
             form.ShowDialog();
-           
-           backGorm.Dispose();
+
+            picForm.Dispose();
+            backGorm.Dispose();
         }
 
 
@@ -204,6 +222,47 @@ namespace SeleniumApproach
             System.IntPtr ptr = CreateRoundRectRgn(0, 0, form.Width, form.Height, 100, 100); // _BoarderRaduis can be adjusted to your needs, try 15 to start.
             form.Region = System.Drawing.Region.FromHrgn(ptr);
             return form;
+        }
+
+        private Form CreateImageShowSuccessForm(IWebElement elt)
+        {
+            PictureBoxForm form = new PictureBoxForm();
+            form.Opacity = 0.75;
+            System.IntPtr ptr = CreateRoundRectRgn(0, 0, form.Width, form.Height, 100, 100); // _BoarderRaduis can be adjusted to your needs, try 15 to start.
+            form.Region = System.Drawing.Region.FromHrgn(ptr);
+            IWebElement parent = (IWebElement)((IJavaScriptExecutor)driver).ExecuteScript(
+           "return arguments[0].parentNode;", elt);
+
+            System.Collections.ObjectModel.ReadOnlyCollection<IWebElement> children = parent.FindElements(By.TagName("div"));
+
+            IWebElement srcElt = children[2];
+
+            String html1 = srcElt.GetAttribute("innerHTML"); //(?=ou\":\")(.*)(?=\\",\\"ow)
+
+            String propReg = @"http.+?(?=\"",)";
+
+            var match = Regex.Match(html1, propReg).Value;
+
+            String fileEnding = match.Substring(match.Length - 4);
+
+            var wClient = new WebClient();
+            System.IO.Directory.CreateDirectory("C:/tmp1");
+            wClient.DownloadFile(match, "C:/tmp1/tmp" + fileEnding);
+
+            Bitmap source = new Bitmap(@"C:/tmp1/tmp" + fileEnding);
+
+          
+            form.pictureBox1.Image = (Image)source;
+            form.StartPosition = FormStartPosition.Manual;
+            form.FormBorderStyle = FormBorderStyle.None;
+           
+            form.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width - form.Width) / 2, 50);
+
+
+            //form.BackgroundImage = source;
+            // form.CreateGraphics().DrawImage(source, 10, 10);
+            return form;
+
         }
 
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
@@ -325,6 +384,7 @@ namespace SeleniumApproach
             return ele;
         }
         private List<IWebElement> list;
+
         private List<IWebElement> GetImageHrefsOnScreen()
         {
             IReadOnlyCollection<IWebElement> elts = driver.FindElements(By.TagName("img"));

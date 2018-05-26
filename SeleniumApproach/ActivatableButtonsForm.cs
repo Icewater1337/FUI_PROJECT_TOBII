@@ -23,8 +23,8 @@ namespace SeleniumApproach
             this.form1 = form1;
             KeyPreview = true;
             InitializeComponent();
-            this.BackColor = Color.DarkGray;
-            this.TransparencyKey = Color.DarkGray;
+            this.BackColor = Color.Black;
+            this.TransparencyKey = Color.Black;
 
           
 
@@ -62,6 +62,9 @@ namespace SeleniumApproach
             {
                 Console.WriteLine("TriggerActivationModeOn");
                 Program.EyeXHost.TriggerActivationModeOn();
+            } else if ( keyEventArgs.KeyCode == System.Windows.Forms.Keys.Escape)
+            {
+                this.Dispose();
             }
             keyEventArgs.Handled = false;
         }
